@@ -19,20 +19,17 @@ func main() {
 
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
-		klog.Errorf("failed to build config from flags: %v", err)
-		os.Exit(1)
+		klog.Fatalf("failed to build config from flags: %v", err)
 	}
 
-	clientset, err := kubernetes.NewForConfig(config)
+	kubeClient, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		klog.Errorf("failed to build clientset: %v", err)
-		os.Exit(1)
+		klog.Fatalf("failed to build clientset: %v", err)
 	}
 
-	pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
+	pods, err := kubeClient.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		klog.Errorf("failed to get pods: %v", err)
-		os.Exit(1)
+		klog.Fatalf("failed to get pods: %v", err)
 	}
 	fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
 
