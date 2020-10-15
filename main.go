@@ -3,34 +3,64 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
-	"path/filepath"
 
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog"
 )
 
 func main() {
-	kubeconfig := filepath.Join(
-		os.Getenv("HOME"), ".kube", "config",
-	)
+	loadRules := clientcmd.NewDefaultClientConfigLoadingRules()
 
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	cfg, err := loadRules.Load()
 	if err != nil {
-		klog.Fatalf("failed to build config from flags: %v", err)
+		klog.Errorf("failed to build config from flags: %v", err)
+		return
 	}
 
-	kubeClient, err := kubernetes.NewForConfig(config)
+	clientConfig, err := clientcmd.NewDefaultClientConfig(
+		*cfg,
+		&clientcmd.ConfigOverrides{},
+	).ClientConfig()
 	if err != nil {
-		klog.Fatalf("failed to build clientset: %v", err)
+		klog.Errorf("failed to build config from flags: %v", err)
+		return
 	}
 
-	pods, err := kubeClient.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
-	if err != nil {
-		klog.Fatalf("failed to get pods: %v", err)
-	}
-	fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
+	client := kubernetes.NewForConfigOrDie(clientConfig)
 
+	cm, err := client.CoreV1().ConfigMaps("default").List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		klog.Errorf("failed to get configmaps: %v", err)
+	}
+	fmt.Printf("configmaps %v\n", cm.Items)
+	fmt.Printf("there are %d configmaps in this cluster\n", len(cm.Items))
+
+	watcher, err := client.CoreV1().ConfigMaps("default").Watch(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		klog.Errorf("failed to get configmaps: %v", err)
+	}
+
+	for ev := range watcher.ResultChan() {
+		cm, ok := ev.Object.(*corev1.ConfigMap)
+		if !ok {
+			klog.Errorf("not a corev1.ConfigMap, instead got %T\n", ev.Object)
+
+		}
+		switch ev.Type {
+		case watch.Added, watch.Modified:
+			fmt.Printf("event %s cm: %#v\n", ev.Type, cm)
+			_, ok := cm.Annotations["x-k8s.io/curl-me-that"]
+			if !ok {
+				continue
+			}
+		default:
+			continue
+		}
+	}
+
+	watcher.Stop()
 }
