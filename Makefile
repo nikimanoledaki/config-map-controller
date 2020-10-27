@@ -17,3 +17,14 @@ build:
 
 lint:
 	golangci-lint run
+
+down:
+	kind delete cluster --name playground
+
+
+up: 
+	KUBECONFIG=~/.kube/playground kind create cluster --name=playground 
+	KUBECONFIG=~/.kube/playground kubectl create cm foo
+
+run:
+	go run .

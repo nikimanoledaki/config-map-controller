@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -11,6 +14,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog"
 )
+
+const annotation = "x-k8s.io/curl-me-that"
 
 func main() {
 	loadRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -53,10 +58,46 @@ func main() {
 		switch ev.Type {
 		case watch.Added, watch.Modified:
 			fmt.Printf("event %s cm: %#v\n", ev.Type, cm)
-			_, ok := cm.Annotations["x-k8s.io/curl-me-that"]
+			nameAndURL, ok := cm.Annotations[annotation]
 			if !ok {
 				continue
 			}
+
+			items := strings.SplitN(nameAndURL, "=", 2)
+			if len(items) != 2 {
+				fmt.Printf("annotation '%s' should have value of the form 'joke=curl-a-joke.herokuapp.com' but got '%v'\n", annotation, nameAndURL)
+				continue
+			}
+
+			name := items[0]
+			url := "https://" + items[1]
+
+			if _, ok := cm.Data[name]; ok {
+				fmt.Printf("the field '%v' already exists, not updating\n", name)
+				continue
+			}
+
+			resp, err := http.Get(url)
+			if err != nil {
+				klog.Errorf("GET '%v' failed: %v", "http://"+url, err)
+				continue
+			}
+
+			// x-k8s.io/curl-me-that: joke=curl-a-joke.herokuapp.com
+			bytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				klog.Errorf("GET '%v' failed: %v", url, err)
+				continue
+			}
+
+			cm.Data[name] = string(bytes)
+
+			_, err = client.CoreV1().ConfigMaps("default").Update(context.TODO(), cm, metav1.UpdateOptions{})
+			if err != nil {
+				klog.Errorf("GET '%v' failed: %v", url, err)
+				continue
+			}
+
 		default:
 			continue
 		}
