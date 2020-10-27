@@ -23,3 +23,6 @@ up:
 
 run:
 	go run .
+
+watch: 
+	KUBECONFIG=~/.kube/playground kubectl get cm foo -oyaml --watch
