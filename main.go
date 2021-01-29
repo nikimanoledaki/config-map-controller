@@ -11,19 +11,19 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog"
 )
 
 const annotation = "x-k8s.io/curl-me-that"
 
-func main() {
+func outClusterConfig() (*rest.Config, error) {
 	loadRules := clientcmd.NewDefaultClientConfigLoadingRules()
 
 	cfg, err := loadRules.Load()
 	if err != nil {
-		klog.Errorf("failed to build config from flags: %v", err)
-		return
+		return nil, err
 	}
 
 	clientConfig, err := clientcmd.NewDefaultClientConfig(
@@ -31,12 +31,18 @@ func main() {
 		&clientcmd.ConfigOverrides{},
 	).ClientConfig()
 	if err != nil {
-		klog.Errorf("failed to build config from flags: %v", err)
-		return
+		return nil, err
+	}
+	return clientConfig, nil
+}
+
+func main() {
+	config, err := outClusterConfig()
+	if err != nil {
+		klog.Fatalf("failed to build config from flags: %v", err)
 	}
 
-	client := kubernetes.NewForConfigOrDie(clientConfig)
-
+	client := kubernetes.NewForConfigOrDie(config)
 	cm, err := client.CoreV1().ConfigMaps("default").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		klog.Errorf("failed to get configmaps: %v", err)
