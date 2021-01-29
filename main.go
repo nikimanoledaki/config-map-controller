@@ -23,7 +23,7 @@ func outClusterConfig() (*rest.Config, error) {
 
 	cfg, err := loadRules.Load()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to load kubeconfig: %v", err)
 	}
 
 	clientConfig, err := clientcmd.NewDefaultClientConfig(
@@ -31,7 +31,7 @@ func outClusterConfig() (*rest.Config, error) {
 		&clientcmd.ConfigOverrides{},
 	).ClientConfig()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create client config: %v", err)
 	}
 	return clientConfig, nil
 }
@@ -43,14 +43,14 @@ func main() {
 	}
 
 	client := kubernetes.NewForConfigOrDie(config)
-	cm, err := client.CoreV1().ConfigMaps("default").List(context.TODO(), metav1.ListOptions{})
+	cm, err := client.CoreV1().ConfigMaps("default").List(context.Background(), metav1.ListOptions{})
 	if err != nil {
 		klog.Errorf("failed to get configmaps: %v", err)
 	}
-	fmt.Printf("configmaps %v\n", cm.Items)
-	fmt.Printf("there are %d configmaps in this cluster\n", len(cm.Items))
+	fmt.Printf("There are %d configmaps in this cluster.\n", len(cm.Items))
+	fmt.Printf("Configmaps: %v\n", cm.Items)
 
-	watcher, err := client.CoreV1().ConfigMaps("default").Watch(context.TODO(), metav1.ListOptions{})
+	watcher, err := client.CoreV1().ConfigMaps("default").Watch(context.Background(), metav1.ListOptions{})
 	if err != nil {
 		klog.Errorf("failed to get configmaps: %v", err)
 	}
@@ -85,22 +85,22 @@ func main() {
 
 			resp, err := http.Get(url)
 			if err != nil {
-				klog.Errorf("GET '%v' failed: %v", "http://"+url, err)
+				klog.Fatalf("GET '%v' failed: %v", "http://"+url, err)
 				continue
 			}
 
 			// x-k8s.io/curl-me-that: joke=curl-a-joke.herokuapp.com
 			bytes, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				klog.Errorf("GET '%v' failed: %v", url, err)
+				klog.Fatalf("GET '%v' failed: %v", url, err)
 				continue
 			}
 
 			cm.Data[name] = string(bytes)
 
-			_, err = client.CoreV1().ConfigMaps("default").Update(context.TODO(), cm, metav1.UpdateOptions{})
+			_, err = client.CoreV1().ConfigMaps("default").Update(context.Background(), cm, metav1.UpdateOptions{})
 			if err != nil {
-				klog.Errorf("GET '%v' failed: %v", url, err)
+				klog.Fatalf("GET '%v' failed: %v", url, err)
 				continue
 			}
 

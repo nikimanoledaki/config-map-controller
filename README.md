@@ -4,8 +4,8 @@ This is a project to build a Kubernetes Controller from scratch using the Watche
 
 ## How to run
 This project has the following dependencies. Make sure to install these locally before proceeding.
-- Docker (for Kubernetes)
-- kind
+- [kind](https://kind.sigs.k8s.io/docs/user/quick-start/)
+- [direnv](https://direnv.net/#basic-installation) is used in the `.envrc` file to export the KUBECONFIG environment variable in your shell. 
 
 Follow the following steps to spin up this application.
 
