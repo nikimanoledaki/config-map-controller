@@ -2,10 +2,10 @@
 
 This is a project to build a Kubernetes Controller from scratch using the Watcher method. It is a Controller that watches for the creation of new ConfigMaps.
 
-## How to run
+## How to run it
 This project has the following dependencies. Make sure to install these locally before proceeding.
 - [kind](https://kind.sigs.k8s.io/docs/user/quick-start/)
-- [direnv](https://direnv.net/#basic-installation) is used in the `.envrc` file to export the KUBECONFIG environment variable in your shell. 
+- [direnv](https://direnv.net/#basic-installation) is used (it's the `.envrc` file) to export the KUBECONFIG environment variable in your shell. 
 
 Follow the following steps to spin up this application.
 
@@ -21,7 +21,7 @@ Follow the following steps to spin up this application.
 kubectl create configmap joke --from-file=./manifests/configmap.yaml
 ```
 
-## Resources
+## Resources
 Here are some of the resources that helped me along the way that I would like to credit:
 - https://github.com/aclevername/config-map-controller
 - https://github.com/kubernetes/client-go/tree/master/examples#advanced-concepts
