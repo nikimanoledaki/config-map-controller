@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/open-component-model/ocm/pkg/version"
+	"github.com/nikimanoledaki/config-map-controller/pkg/version"
 )
 
 func main() {
