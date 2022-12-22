@@ -31,13 +31,13 @@ function tag_and_push_release() {
 
 # Check prerequisites
 gh version
-gh auth status
+# gh auth status
 
 release_version=$(go run pkg/version/generate/release_generate.go print-version)
 ensure_release_notes "${release_version}"
 
 # Create release  branch
-release_branch=$(release-"${release_version}")
+release_branch="${release-"${release_version}"}"
 create_branch_if_doesnt_exist "${release_branch}"
 git checkout "${release_branch}"
 git pull --ff-only origin "${release_branch}" || echo "${release_branch} not found in origin, pushing new branch upstream."
