@@ -20,14 +20,14 @@ function create_branch_if_doesnt_exist() {
   fi
 }
 
-function tag_and_push_release() {
-    local version="${1}"
-    local msg="${2}"
-    for tag in "${version}" "${version}"; do
-      git tag --annotate --message "${msg}" "${tag}"
-      git push origin "${tag}"
-    done
-}
+# function tag_and_push_release() {
+#     local version="${1}"
+#     local msg="${2}"
+#     # for tag in "${version}" "${version}"; do
+#     git tag --annotate --message "${msg}" "${tag}"
+#     git push origin "${tag}"
+#     # done
+# }
 
 # Check prerequisites
 gh version
@@ -40,11 +40,13 @@ ensure_release_notes "${release_version}"
 release_branch="${release-"${release_version}"}"
 create_branch_if_doesnt_exist "${release_branch}"
 echo "Here1"
-git checkout "${release_branch}"
-echo "Here2"
+# git checkout "${release_branch}"
+# echo "Here2"
 
 # git pull --ff-only origin "${release_branch}" || echo "${release_branch} not found in origin, pushing new branch upstream."
 
 # Tag and push release
 msg="Release ${release_version}"
-tag_and_push_release "${release_version}" "${msg}"
+git tag --annotate --message "${msg}" "${release_version}"
+git push origin "${release_version}"
+# tag_and_push_release "${release_version}" "${msg}"
