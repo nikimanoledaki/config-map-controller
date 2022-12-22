@@ -40,7 +40,7 @@ ensure_release_notes "${release_version}"
 release_branch="${release-"${release_version}"}"
 create_branch_if_doesnt_exist "${release_branch}"
 git checkout "${release_branch}"
-git pull --ff-only origin "${release_branch}" || echo "${release_branch} not found in origin, pushing new branch upstream."
+git pull --ff-only origin "${release_branch}" # || echo "${release_branch} not found in origin, pushing new branch upstream."
 
 # Tag and push release
 msg="Release ${release_version}"
