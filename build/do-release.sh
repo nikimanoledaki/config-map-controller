@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export default_branch="main"
-
 function ensure_release_notes() {
   release_notes_file="$1"
   if [[ ! -f "${release_notes_file}" ]]; then
