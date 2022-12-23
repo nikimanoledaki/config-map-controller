@@ -28,7 +28,7 @@ jobs:
           go-
     - name: Validate release notes
       env:
-        RELEASE_VERSION: go run pkg/version/generate/release_generate.go print-version
+        RELEASE_VERSION: "$(go run pkg/version/generate/release_generate.go print-version)"
         RELEASE_NOTES_FILE: "docs/release_notes/$RELEASE_VERSION.md"
       run: |
         if [[ ! -f ${{ env.RELEASE_NOTES_FILE }} ]]; then
