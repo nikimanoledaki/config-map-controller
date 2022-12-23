@@ -29,15 +29,15 @@ release_version=$(go run pkg/version/generate/release_generate.go print-version)
 release_notes_file="docs/release_notes/${release_version}.md"
 ensure_release_notes "${release_notes_file}"
 
-# Create release  branch
+# Create release branch
 release_branch="release-${release_version}"
 create_branch_if_doesnt_exist "${release_branch}"
 
-# Tag and push release
+# Create and push tag
 msg="Release ${release_version}"
 git tag --annotate --message "${msg}" "${release_version}"
 git push origin "${release_version}"
 
-# Export vars for release
+# Export environment variables for goreleaser
 export GORELEASER_RELEASE_NOTES_FILE=${release_notes_file}
 export GORELEASER_CURRENT_TAG=${release_version}
