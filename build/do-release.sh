@@ -22,6 +22,9 @@ function create_branch_if_doesnt_exist() {
   fi
 }
 
+git config user.name "GitHub Actions Bot"
+git config user.email "<>"
+
 release_version=$(go run pkg/version/generate/release_generate.go print-version)
 release_notes_file="docs/release_notes/${release_version}.md"
 ensure_release_notes "${release_notes_file}"
