@@ -31,8 +31,8 @@ jobs:
         RELEASE_VERSION: go run pkg/version/generate/release_generate.go print-version
         RELEASE_NOTES_FILE: "docs/release_notes/${{ env.RELEASE_VERSION }}.md"
       run: |
-        if [[ ! -f ${RELEASE_NOTES_FILE} ]]; then
-          >&2 echo "Must have release notes ${RELEASE_NOTES_FILE}"
+        if [[ ! -f ${{ env.RELEASE_NOTES_FILE }} ]]; then
+          >&2 echo "Must have release notes ${{ env.RELEASE_NOTES_FILE }}"
           exit 6
         fi
     - name: Create and push branch
