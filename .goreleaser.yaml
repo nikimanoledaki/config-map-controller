@@ -3,6 +3,7 @@
 builds:
   - main: ./main.go
     env:
+      - GO111MODULE=on
       - CGO_ENABLED=0
     goos:
       - linux
