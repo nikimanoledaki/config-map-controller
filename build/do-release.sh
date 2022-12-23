@@ -38,6 +38,6 @@ msg="Release ${release_version}"
 git tag --annotate --message "${msg}" "${release_version}"
 git push origin "${release_version}"
 
-# Do release
+# Export vars for release
+export GORELEASER_RELEASE_NOTES_FILE=${release_notes_file}
 export GORELEASER_CURRENT_TAG=${release_version}
-curl -sfL https://goreleaser.com/static/run | bash release --rm-dist --timeout 60m --skip-validate --config=./.goreleaser.yaml --release-notes="${release_notes_file}"

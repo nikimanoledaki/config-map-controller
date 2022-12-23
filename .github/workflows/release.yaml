@@ -28,3 +28,9 @@ jobs:
           go-
     - name: Push tag and do release
       run: make do-release
+    - name: Run goreleaser
+      uses: goreleaser/goreleaser-action@v4
+      with:
+        distribution: goreleaser
+        version: latest
+        args: release --rm-dist --timeout 60m --skip-validate --config=./.goreleaser.yaml --release-notes=$GORELEASER_RELEASE_NOTES_FILE
