@@ -34,5 +34,5 @@ watch:
 	KUBECONFIG=~/.kube/playground kubectl get cm foo -oyaml --watch
 
 .PHONY: prepare-release
-prepare-release: ## Create release
-	build/tag-release.sh
+do-release: ## Create release
+	build/do-release.sh
