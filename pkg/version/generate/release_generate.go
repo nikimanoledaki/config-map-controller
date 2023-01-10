@@ -20,6 +20,6 @@ func main() {
 
 	switch cmd {
 	case "print-version":
-		fmt.Println(version.ReleaseVersion)
+		fmt.Print(version.ReleaseVersion)
 	}
 }
