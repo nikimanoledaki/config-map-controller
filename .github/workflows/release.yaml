@@ -27,7 +27,7 @@ jobs:
         restore-keys: |
           go-
     - name: Set release version
-      run: echo "RELEASE_VERSION=$(echo go run ${{ env.GITHUB_WORKSPACE }}/pkg/version/generate/release_generate.go print-version)" >> $GITHUB_ENV
+      run: echo "RELEASE_VERSION=$(echo go run $GITHUB_WORKSPACE/pkg/version/generate/release_generate.go print-version)" >> $GITHUB_ENV
     - name: Validate release notes
       env:
         RELEASE_NOTES_FILE: "docs/release_notes/${{ env.RELEASE_VERSION }}.md"
