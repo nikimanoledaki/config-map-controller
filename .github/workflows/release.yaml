@@ -27,7 +27,7 @@ jobs:
         restore-keys: |
           go-
     - name: Set release version
-      run: echo "RELEASE_VERSION=$(shell go run pkg/version/generate/release_generate.go print-version)" >> $RELEASE_VERSION
+      run: echo "RELEASE_VERSION=$(echo go run pkg/version/generate/release_generate.go print-version)" >> $RELEASE_VERSION
     - name: Validate release notes
       env:
         RELEASE_NOTES_FILE: "docs/release_notes/${{ env.RELEASE_VERSION }}.md"
