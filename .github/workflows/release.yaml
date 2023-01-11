@@ -27,7 +27,7 @@ jobs:
         restore-keys: |
           go-
     - name: Prepare release
-      run: bash ./.github/workflows/do-release.sh
+      run: ./.github/workflows/do-release.sh
       shell: bash
     - name: Run goreleaser
       uses: goreleaser/goreleaser-action@v4
