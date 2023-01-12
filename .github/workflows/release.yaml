@@ -50,6 +50,10 @@ jobs:
             git checkout ${RELEASE_BRANCH}
             git pull --ff-only origin ${RELEASE_BRANCH}
         fi
+    - name: setup git config
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "<41898282+github-actions[bot]@users.noreply.github.com>"
     - name: Create and push tag
       run: |
         msg="Release ${{ env.RELEASE_VERSION }}"
