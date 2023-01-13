@@ -35,7 +35,7 @@ jobs:
     - name: Validate release notes
       if: test -f ${{ env.RELEASE_NOTES_FILE }} == 'false'
       run: |
-        echo ${{ test -f ${{ env.RELEASE_NOTES_FILE }} == 'false' }}
+        echo $(test -f ${{ env.RELEASE_NOTES_FILE }} == 'false')
         >&2 echo "Must have release notes ${{ env.RELEASE_NOTES_FILE }}"
         exit 6
     - name: Create and push branch
