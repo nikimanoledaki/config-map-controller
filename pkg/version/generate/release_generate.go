@@ -21,5 +21,7 @@ func main() {
 	switch cmd {
 	case "print-version":
 		fmt.Print(version.ReleaseVersion)
+	case "print-rc-version":
+		fmt.Printf("%s-%s", version.ReleaseVersion, version.ReleaseCandidate)
 	}
 }
