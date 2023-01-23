@@ -3,7 +3,7 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      release-candidate:
+      release_candidate:
         type: boolean
         description: "Release Candidate"
         required: false
@@ -34,7 +34,7 @@ jobs:
           go-
     - name: Set release version
       run: |
-        if ${{ github.event.inputs.release-candidate == 'true' }}; then
+        if $INPUT_RELEASE_CANDIDATE; then
           echo "RELEASE_VERSION=$(go run $GITHUB_WORKSPACE/pkg/version/generate/release_generate.go print-version)" >> $GITHUB_ENV
         else
           echo "RELEASE_VERSION=$(go run $GITHUB_WORKSPACE/pkg/version/generate/release_generate.go print-rc-version)" >> $GITHUB_ENV
