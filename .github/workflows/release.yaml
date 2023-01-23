@@ -5,9 +5,9 @@ on:
     inputs:
       release-candidate:
         type: boolean
-        description: "Release Candidate (default: 'false')"
+        description: "Release Candidate"
         required: false
-        default: false
+        default: true
 
 jobs:
   # lint-and-test:
@@ -39,7 +39,7 @@ jobs:
         else
           echo "RELEASE_VERSION=$(go run $GITHUB_WORKSPACE/pkg/version/generate/release_generate.go print-rc-version)" >> $GITHUB_ENV
         fi
-    - name: Set release notes file and branch
+    - name: Set release notes file
       run: |
         echo "RELEASE_NOTES_FILE=docs/release_notes/$(go run $GITHUB_WORKSPACE/pkg/version/generate/release_generate.go print-version).md" >> $GITHUB_ENV
     - name: Validate release notes
