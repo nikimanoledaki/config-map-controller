@@ -7,12 +7,16 @@ on:
         type: boolean
         description: "Release Candidate"
         required: false
-        default: true
+        default: false
 
 jobs:
   # lint-and-test:
-    # uses: ./.github/workflows/lint_and_test.yaml
+  #   uses: ./.github/workflows/lint_and_test.yaml
+  #   permissions:
+  #     contents: read
+  #     pull-requests: read
   release:
+    # needs: lint-and-test
     name: Trigger release build
     runs-on: ubuntu-latest
     permissions:
@@ -23,6 +27,10 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+    - name: Setup Go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: '${{ github.workspace }}/go.mod'
     - name: Cache go-build and mod
       uses: actions/cache@v3
       with:
@@ -34,14 +42,14 @@ jobs:
           go-
     - name: Set release version
       run: |
-        if $INPUT_RELEASE_CANDIDATE; then
+        if github.event.inputs.release_candidate; then
           echo "RELEASE_VERSION=$(go run $GITHUB_WORKSPACE/pkg/version/generate/release_generate.go print-version)" >> $GITHUB_ENV
         else
           echo "RELEASE_VERSION=$(go run $GITHUB_WORKSPACE/pkg/version/generate/release_generate.go print-rc-version)" >> $GITHUB_ENV
         fi
     - name: Set release notes file
       run: |
-        echo "RELEASE_NOTES_FILE=docs/release_notes/$(go run $GITHUB_WORKSPACE/pkg/version/generate/release_generate.go print-version).md" >> $GITHUB_ENV
+        echo "RELEASE_NOTES_FILE=docs/releasenotes/$(go run $GITHUB_WORKSPACE/pkg/version/generate/release_generate.go print-version).md" >> $GITHUB_ENV
     - name: Validate release notes
       run: |
         if [[ ! -f ${{ env.RELEASE_NOTES_FILE }} ]]; then
