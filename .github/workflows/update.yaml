@@ -1,0 +1,32 @@
+name: Update OCM CLI version in Setup Action
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-action:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: 'write'
+      id-token: 'write'
+      pull-requests: 'write'
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Update CLI Version
+      run: |
+        TAG=v0.0.0
+        sed -i "s/version:= .*/version:=$TAG/" ./install.sh
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        title: "Update OCM CLI Version"
+        commit-message: "[github-actions] automated change"
+        add-paths: |
+          ./install.sh
+        branch: update-version/auto
+        branch-suffix: timestamp
+        delete-branch: true
+        body: |
+          Update the OCM CLI version used for Setup Action with new release
